@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = new GoogleSignIn();
@@ -16,6 +17,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FirebaseUser user;
+  static String _inputText = "";
+  final TextEditingController _controller =
+      new TextEditingController(text: _inputText);
+  List<Widget> _list = new List<Widget>();
 
   @override
   initState() {
@@ -34,40 +39,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(20.0),
                 children: [
-                  new SizedBox(
-                      height: 400.0,
-                      child: new Card(
-                          color: Colors.white,
-                          child: new Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                new Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: new Text(
-                                    'firebase auth',
-                                    style: new TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              ]))),
-                  new SizedBox(
-                      height: 400.0,
-                      child: new Card(
-                          color: Colors.white,
-                          child: new Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                new Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: new Text(
-                                    'fire store',
-                                    style: new TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              ])))
+                  new Card(
+                      color: Colors.white,
+                      child: new Row(children: [
+                        new Expanded(
+                            child: new Padding(
+                          padding: new EdgeInsets.all(5.0),
+                          child: new TextField(
+                              controller: _controller,
+                              decoration: new InputDecoration(
+                                hintText: 'Type something',
+                              ),
+                              onChanged: _changeText),
+                        )),
+                        new IconButton(
+                          icon: new Icon(Icons.send),
+                          tooltip: 'submit',
+                          onPressed: _addCard,
+                        )
+                      ])),
+                  new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: _list,
+                  )
                 ])));
   }
 
@@ -83,11 +78,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _handleSignOut() {
+  void _handleSignOut() async {
     _auth.signOut();
     setState(() {
       user = null;
     });
+  }
+
+  void _changeText(String text) {
+    print('enter text');
+    print(text);
+    _inputText = text;
+  }
+
+  void _addCard() {
+    setState(() {
+      SizedBox box = new SizedBox(
+        width: 300.0,
+        height: 50.0,
+        child: new Card(child: new Text(_inputText)),
+      );
+      _list.add(box);
+    });
+  }
+
+  List<Widget> _createList() {
+    _list = new List<Widget>();
+    return _list;
   }
 
   Widget _createDrawer(FirebaseUser user) {
