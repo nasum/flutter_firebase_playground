@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = new GoogleSignIn();
@@ -25,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
+    _getDocument(_list);
   }
 
   @override
@@ -86,12 +87,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _changeText(String text) {
-    print('enter text');
-    print(text);
     _inputText = text;
   }
 
+  void _getDocument(List<Widget> list) async {
+    QuerySnapshot snapShot =
+        await Firestore.instance.collection('memo').getDocuments();
+
+    setState(() {
+      snapShot.documents.forEach((DocumentSnapshot ds) {
+        SizedBox box = new SizedBox(
+          width: 300.0,
+          height: 50.0,
+          child: new Card(child: new Text(ds.data['text'])),
+        );
+        list.add(box);
+      });
+    });
+  }
+
   void _addCard() {
+    Firestore.instance
+        .collection('memo')
+        .document()
+        .setData({'text': _inputText});
     setState(() {
       SizedBox box = new SizedBox(
         width: 300.0,
@@ -100,11 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       _list.add(box);
     });
-  }
-
-  List<Widget> _createList() {
-    _list = new List<Widget>();
-    return _list;
   }
 
   Widget _createDrawer(FirebaseUser user) {

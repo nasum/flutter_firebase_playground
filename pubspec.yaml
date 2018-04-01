@@ -10,7 +10,8 @@ dependencies:
   cupertino_icons: ^0.1.0
   firebase_auth: ^0.5.3
   google_sign_in: ^3.0.0
-  # cloud_firestore: ^0.3.2
+  # 何故か最新じゃ動かない
+  cloud_firestore: ^0.2.6
   font_awesome_flutter: ^6.0.0
 
 dev_dependencies:
